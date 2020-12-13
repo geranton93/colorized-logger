@@ -1,4 +1,4 @@
-import { format, transports, createLogger, Logger } from "winston";
+import { format, transports, createLogger, Logger, LoggerOptions } from "winston";
 import { Colors, IColors } from './Colors';
 import { dateTimeFormat, Level } from './const';
 import { stringifyArgObject } from './helpers/stringifier';
@@ -16,7 +16,7 @@ export class ColorizedLogger {
     private place: string;
     private colors: Colors;
     private logger: Logger;
-    private level: Level;
+    private level?: Level;
     private timeStampFormat: string;
     private showOptions: IShowOptions;
 
@@ -49,9 +49,8 @@ export class ColorizedLogger {
     private createWinstonLogger(): Logger {
         const { info, error, warn, debug } = this.colors.levelColors;
 
-        return createLogger({
+        const loggerOptions: LoggerOptions = {
             transports: [new transports.Console()],
-            level: this.level,
             format: format.combine(
                 format.errors({ stack: true }),
                 format.timestamp({
@@ -70,7 +69,11 @@ export class ColorizedLogger {
                         }: ${log.message}`;
                 })
             )
-        });
+        };
+
+        if (this.level) loggerOptions.level = this.level;
+
+        return createLogger(loggerOptions);
     }
     
 
@@ -108,22 +111,22 @@ export class ColorizedLogger {
         return this;
     }
 
-    public warn(...args): void {
+    public warn(...args: any[]): void {
         const argElements = stringifyArgObject([...args]);
         this.logger.warn(argElements);
     }
 
-    public info(...args): void {
+    public info(...args: any[]): void {
         const argElements = stringifyArgObject([...args]);
         this.logger.info(argElements);
     }
 
-    public debug(...args): void {
+    public debug(...args: any[]): void {
         const argElements = stringifyArgObject([...args]);
         this.logger.debug(argElements);
     }
 
-    public error(...args): void {
+    public error(...args: any[]): void {
         const argElements = stringifyArgObject([...args]);
         this.logger.error(argElements);
     }
