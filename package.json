@@ -1,7 +1,7 @@
 {
   "name": "colorized-logger",
   "version": "1.0.0",
-  "description": "logger based on winston npm module with colorized fields",
+  "description": "Logger based on winston npm module with colorized fields. You can customize colors for console simply with few steps",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

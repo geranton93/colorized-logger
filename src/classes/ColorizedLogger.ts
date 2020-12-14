@@ -1,8 +1,11 @@
 import { format, transports, createLogger, Logger, LoggerOptions } from "winston";
-import { Colors, IColors } from './Colors';
-import { dateTimeFormat, Level } from './const';
-import { stringifyArgObject } from './helpers/stringifier';
-import { DefaultShowOptions, IShowOptions } from './Options';
+import { Colors } from './Colors';
+import { dateTimeFormat } from '../const';
+import { stringifyArgObject } from '../helpers/stringifier';
+import { IColors } from '../interfaces/Colors';
+import { DefaultShowOptions } from './Options';
+import { IShowOptions } from '../interfaces/ShowOptions';
+import { Level } from '../enums/Level';
 
 
 /**
@@ -61,12 +64,17 @@ export class ColorizedLogger {
                 }),
                 format.align(),
                 format.printf(log => {
-                    const timeStamp = `${this.colors.timeColor} ${log.timestamp} \x1b[0m$`;
+                    const timeStamp = `${this.colors.timeColor} ${log.timestamp}\x1b[0m$`;
                     const level = `[${log.level}]`;
+                    const place = `[${this.colors.placeColor}${this.place}\x1b[0m]`;
+
+                    const timeStampClause = this.showOptions.timestamp ? timeStamp : "";
+                    const levelClause = this.showOptions.level ? level : "";
+                    const placeClause = this.place ? place : "";
 
                     if (log.stack) log.message = `${log.message}, \n Stack${log.stack}`;
-                    return `${this.showOptions.timestamp ? timeStamp : ""} ${this.showOptions.level ? level : ""}${this.place ? ` [${this.colors.placeColor}${this.place}\x1b[0m]` : ""
-                        }: ${log.message}`;
+
+                    return `${timeStampClause} ${levelClause} ${placeClause}: ${log.message}`;
                 })
             )
         };
@@ -75,7 +83,6 @@ export class ColorizedLogger {
 
         return createLogger(loggerOptions);
     }
-    
 
     /**
      * Set location of logger instance where new instanсe was created
@@ -101,11 +108,26 @@ export class ColorizedLogger {
         return this;
     }
 
+    /**
+     * Change default timeStamp format. By default timeStamp is YY.MM.DD HH:mm:ss:SSS
+     *
+     * @param {string} timeStampFormat
+     * @returns {ColorizedLogger}
+     * @memberof ColorizedLogger
+     */
     public setTimeStampFormat(timeStampFormat: string): ColorizedLogger {
         this.timeStampFormat = timeStampFormat;
         return this;
     }
 
+    /**
+     * Can disable/enable timestamp/level showing in log
+     * Everything is enabled by default
+     *
+     * @param {IShowOptions} showOptions
+     * @returns {ColorizedLogger}
+     * @memberof ColorizedLogger
+     */
     public setShowOptions(showOptions: IShowOptions): ColorizedLogger {
         this.showOptions = Object.assign(new DefaultShowOptions(), showOptions);
         return this;

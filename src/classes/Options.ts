@@ -1,7 +1,4 @@
-export interface IShowOptions {
-    timestamp?: boolean;
-    level?: boolean;
-}
+import { IShowOptions } from '../interfaces/ShowOptions';
 
 export class DefaultShowOptions implements IShowOptions {
     public timestamp = true;

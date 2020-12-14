@@ -1,4 +1,3 @@
-export * from './src/ColorizedLogger';
-export * from './src/Colors';
-export * from './src/const';
-export * from './src/Options';
+export * from './src/enums';
+export * from './src/classes';
+export * from './src/interfaces';

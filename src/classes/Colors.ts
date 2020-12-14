@@ -1,17 +1,6 @@
-import { FormatColors } from './const';
-
-export interface ILevelColors {
-    info?: string;
-    error?: string;
-    warn?: string;
-    debug?: string;
-}
-
-export interface IColors {
-    timeColor: string;
-    placeColor: string;
-    levelColors: LevelColors;
-}
+import { FormatColors } from '../enums/FormatColors';
+import { IColors } from '../interfaces/Colors';
+import { ILevelColors } from '../interfaces/LevelColor';
 
 export class LevelColors implements ILevelColors {
     public info = FormatColors.Blue;
