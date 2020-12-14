@@ -1,11 +1,9 @@
 import { format, transports, createLogger, Logger, LoggerOptions } from "winston";
-import { Colors } from './Colors';
+import { Colors, LevelColors, DefaultShowOptions, Braces } from './';
 import { dateTimeFormat } from '../const';
 import { stringifyArgObject } from '../helpers/stringifier';
-import { IColors } from '../interfaces/Colors';
-import { DefaultShowOptions } from './Options';
-import { IShowOptions } from '../interfaces/ShowOptions';
-import { Level } from '../enums/Level';
+import { IShowOptions, ILevelColors, IColors, IBraces } from '../interfaces';
+import { Level } from '../enums';
 
 
 /**
@@ -20,28 +18,31 @@ export class ColorizedLogger {
     private colors: Colors;
     private logger: Logger;
     private level?: Level;
-    private timeStampFormat: string;
+    private timestampFormat: string;
     private showOptions: IShowOptions;
+    private levelColors: ILevelColors;
+    private braces: IBraces;
 
-    
+
     /**
      * Creates an instance of ColorizedLogger.
      * 
      * @param {Level} [level]
      * @param {IColors} [colors]
-     * @param {string} [timeStampFormat] 
+     * @param {string} [timestampFormat] 
      * @memberof ColorizedLogger
      */
-    public constructor(level?: Level, colors?: IColors, timeStampFormat?: string, showOptions?: IShowOptions) {
+    public constructor(level?: Level) {
         this.place = "";
-        this.colors = Object.assign(new Colors(), colors || {});
+        this.colors = new Colors();
+        this.levelColors = new LevelColors();
         this.level = level;
-        this.timeStampFormat = timeStampFormat || dateTimeFormat;
-        this.showOptions = Object.assign(new DefaultShowOptions(), showOptions);
+        this.timestampFormat = dateTimeFormat;
+        this.showOptions = new DefaultShowOptions();
+        this.braces = new Braces();
         this.logger = this.createWinstonLogger();
     }
 
-    
     /**
      * Creates an instance of winston logger 
      *
@@ -50,31 +51,33 @@ export class ColorizedLogger {
      * @memberof ColorizedLogger
      */
     private createWinstonLogger(): Logger {
-        const { info, error, warn, debug } = this.colors.levelColors;
+        const { info, error, warn, debug } = this.levelColors;
 
         const loggerOptions: LoggerOptions = {
             transports: [new transports.Console()],
             format: format.combine(
                 format.errors({ stack: true }),
                 format.timestamp({
-                    format: this.timeStampFormat,
+                    format: this.timestampFormat,
                 }),
                 format.colorize({
                     colors: { info, error, warn, debug }
                 }),
                 format.align(),
                 format.printf(log => {
-                    const timeStamp = `${this.colors.timeColor} ${log.timestamp}\x1b[0m$`;
-                    const level = `[${log.level}]`;
-                    const place = `[${this.colors.placeColor}${this.place}\x1b[0m]`;
+                    log.message = log.message.substring(1);
 
-                    const timeStampClause = this.showOptions.timestamp ? timeStamp : "";
-                    const levelClause = this.showOptions.level ? level : "";
+                    const timestamp = `${this.braces.timestamp[0]}${this.colors.timestampColor}${log.timestamp}\x1b[0m${this.braces.timestamp[1]}`;
+                    const level = `${this.braces.level[0]}${log.level}${this.braces.level[1]}`;
+                    const place = `${this.braces.location[0]}${this.colors.placeColor}${this.place}\x1b[0m${this.braces.location[1]}`;
+
+                    const timestampClause = this.showOptions.timestamp ? timestamp : "";
+                    const levelClause = this.showOptions.level ? "" + level : "";
                     const placeClause = this.place ? place : "";
 
                     if (log.stack) log.message = `${log.message}, \n Stack${log.stack}`;
 
-                    return `${timeStampClause} ${levelClause} ${placeClause}: ${log.message}`;
+                    return `${timestampClause}${levelClause}${placeClause}${(timestampClause || levelClause || placeClause) ? ': ' : ''}${this.colors.message}${log.message}\x1b[0m`;
                 })
             )
         };
@@ -109,14 +112,53 @@ export class ColorizedLogger {
     }
 
     /**
-     * Change default timeStamp format. By default timeStamp is YY.MM.DD HH:mm:ss:SSS
+     * Change default timestamp format. By default timestamp is YYYY.MM.DD HH:mm:ss:SSS
      *
-     * @param {string} timeStampFormat
+     * @param {string} timestampFormat
      * @returns {ColorizedLogger}
      * @memberof ColorizedLogger
      */
-    public setTimeStampFormat(timeStampFormat: string): ColorizedLogger {
-        this.timeStampFormat = timeStampFormat;
+    public setTimeStampFormat(timestampFormat: string): ColorizedLogger {
+        this.timestampFormat = timestampFormat;
+        this.logger = this.createWinstonLogger();
+        return this;
+    }
+
+    /**
+     * Change braces for all objects in logs
+     *
+     * @param {string[]} braces must look like ['[', ']'] or ['', '']
+     * @returns {ColorizedLogger}
+     * @memberof ColorizedLogger
+     */
+    public setBracesTypeForAll(braces: string[]): ColorizedLogger {
+        Object.keys(this.braces).forEach(key => {
+            this.braces[key] = braces;
+        });
+        return this;
+    }
+
+    /**
+     * Change braces for objects in logs 
+     *
+     * @param {IBraces} braces
+     * @returns {ColorizedLogger}
+     * @memberof ColorizedLogger
+     */
+    public setBracesType(braces: IBraces): ColorizedLogger {
+        this.braces = Object.assign(this.braces, braces);
+        return this;
+    }
+
+
+    /**
+     * Set for braces default values
+     *
+     * @returns {ColorizedLogger}
+     * @memberof ColorizedLogger
+     */
+    public resetBraces(): ColorizedLogger {
+        this.braces = new Braces();
         return this;
     }
 
@@ -129,7 +171,7 @@ export class ColorizedLogger {
      * @memberof ColorizedLogger
      */
     public setShowOptions(showOptions: IShowOptions): ColorizedLogger {
-        this.showOptions = Object.assign(new DefaultShowOptions(), showOptions);
+        this.showOptions = Object.assign(this.showOptions, showOptions);
         return this;
     }
 
