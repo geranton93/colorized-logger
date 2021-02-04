@@ -31,3 +31,14 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+.gitignore
+.prettierrc
+example.ts
+index.ts
+src
+images
+.eslintrc
+.eslintignore
+tsconfig.json
+tsconfig.build.json

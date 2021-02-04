@@ -1,5 +1,5 @@
 export interface IColors {
     timestampColor?: string;
-    placeColor?: string;
+    contextColor?: string;
     message?: string;
 }

@@ -1,22 +1,27 @@
 {
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 2020,
-    "sourceType": "module", 
-    "ecmaFeatures": {
-      "node": true
-    }
+      "project": "tsconfig.json",
+      "ecmaVersion": 2020,
+      "sourceType": "module",
+      "ecmaFeatures": {
+          "node": true
+      }
+  },
+  "root": true,
+  "env": {
+      "node": true,
+      "jest": true
   },
   "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
-    "@typescript-eslint/explicit-function-return-type": 1,
-    "@typescript-eslint/explicit-module-boundary-types": 0,
-    "@typescript-eslint/no-explicit-any": 0,
-    "@typescript-eslint/semi": 2,
-    "@typescript-eslint/explicit-member-accessibility": 2
+      "@typescript-eslint/explicit-function-return-type": 1,
+      "@typescript-eslint/explicit-module-boundary-types": 0,
+      "@typescript-eslint/no-explicit-any": 0,
+      "@typescript-eslint/semi": 2,
+      "@typescript-eslint/explicit-member-accessibility": 2
   }
 }

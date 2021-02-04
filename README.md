@@ -16,13 +16,13 @@ use import syntax
 ```ts
     import { ColorizedLogger, Level } from 'colorized-logger';
 
-    const logger = new ColorizedLogger(Level.debug);
+    const logger = new ColorizedLogger('', Level.debug);
 ```
 or require
 ```js
     const { ColorizedLogger } = require('colorized-logger');
 
-    const logger = new ColorizedLogger('debug');
+    const logger = new ColorizedLogger('', 'debug');
 ```
 ## Methods and Examples 
 
@@ -79,11 +79,11 @@ result:
 Set context of log message. By default ot doesnt exists in logger
 method:
 ```ts
-    logger.setLocation('dist/index.js');
+    logger.setContext('dist/index.js');
 ```
 result:
 
-<img src="./images/setLocation.png">
+<img src="./images/setContext.png">
 
 method:
 reset all braces to default []
@@ -112,14 +112,14 @@ result:
 
 <img src="./images/setShowOptions.png">
 
-to reset location just set empty sring
+to reset context just set empty string
 method:
 ```ts
-    logger.setLocation('');
+    logger.setContext('');
 ```
 result:
 
-<img src="./images/setLocation.png">
+<img src="./images/setContextEmpty.png">
 
 method:
 ```ts

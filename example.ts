@@ -1,7 +1,7 @@
 import { ColorizedLogger } from '.';
 import { Level } from './src/enums';
 
-const logger = new ColorizedLogger(Level.debug);
+const logger = new ColorizedLogger('', Level.debug);
 
 logger.info('string', 1, [1, 2], [{ key: [NaN] }], { [1]: true }, undefined, NaN, true, Infinity, false);
 
@@ -22,9 +22,9 @@ logger.setBracesTypeForAll(['\\\\', '//']);
 
 logger.warn('now log with unified braces');
 
-logger.setLocation('dist/index.js');
+logger.setContext('dist/index.js');
 
-logger.info('log with location');
+logger.info('log with context');
 
 logger.resetBraces();
 
@@ -38,7 +38,7 @@ logger.setShowOptions({ timestamp: false, level: false });
 
 logger.info('logger without level and timestamp');
 
-logger.setLocation('');
+logger.setContext('');
 
 logger.info('message without anything');
 

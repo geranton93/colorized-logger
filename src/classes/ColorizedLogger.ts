@@ -9,12 +9,11 @@ import { Level } from '../enums';
 /**
  * Cororized logger based on winston logger with customizing colors and log elements
  *
- * @param {string?} level  
  * @export
  * @class ColorizedLogger
  */
 export class ColorizedLogger {
-    private place: string;
+    private context: string;
     private colors: Colors;
     private logger: Logger;
     private level?: Level;
@@ -26,14 +25,12 @@ export class ColorizedLogger {
 
     /**
      * Creates an instance of ColorizedLogger.
-     * 
+     * @param {string} [context]
      * @param {Level} [level]
-     * @param {IColors} [colors]
-     * @param {string} [timestampFormat] 
      * @memberof ColorizedLogger
      */
-    public constructor(level?: Level) {
-        this.place = "";
+    public constructor(context?: string, level?: Level) {
+        this.context = context || "";
         this.colors = new Colors();
         this.levelColors = new LevelColors();
         this.level = level;
@@ -69,15 +66,15 @@ export class ColorizedLogger {
 
                     const timestamp = `${this.braces.timestamp[0]}${this.colors.timestampColor}${log.timestamp}\x1b[0m${this.braces.timestamp[1]}`;
                     const level = `${this.braces.level[0]}${log.level}${this.braces.level[1]}`;
-                    const place = `${this.braces.location[0]}${this.colors.placeColor}${this.place}\x1b[0m${this.braces.location[1]}`;
+                    const context = `${this.braces.context[0]}${this.colors.contextColor}${this.context}\x1b[0m${this.braces.context[1]}`;
 
                     const timestampClause = this.showOptions.timestamp ? timestamp : "";
                     const levelClause = this.showOptions.level ? "" + level : "";
-                    const placeClause = this.place ? place : "";
+                    const contextClause = this.context ? context : "";
 
                     if (log.stack) log.message = `${log.message}, \n Stack${log.stack}`;
 
-                    return `${timestampClause}${levelClause}${placeClause}${(timestampClause || levelClause || placeClause) ? ': ' : ''}${this.colors.message}${log.message}\x1b[0m`;
+                    return `${timestampClause}${levelClause}${contextClause}${(timestampClause || levelClause || contextClause) ? ': ' : ''}${this.colors.message}${log.message}\x1b[0m`;
                 })
             )
         };
@@ -88,14 +85,14 @@ export class ColorizedLogger {
     }
 
     /**
-     * Set location of logger instance where new instanсe was created
+     * Set context of logger instance where new instanсe was created
      *
-     * @param {string} place
+     * @param {string} context
      * @memberof Logger
      * @return {Logger}
      */
-    public setLocation(place: string): ColorizedLogger {
-        this.place = place;
+    public setContext(context: string): ColorizedLogger {
+        this.context = context;
         return this;
     }
 
